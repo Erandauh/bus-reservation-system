@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Enactor Bus Reservation System</title>
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; line-height: 1.6; background: #f4f4f9; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        h2 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; }
+        input { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { background: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #2980b9; }
+        #response { background: #2c3e50; color: #27ae60; padding: 15px; border-radius: 4px; white-space: pre-wrap; min-height: 50px; }
+    </style>
+</head>
+<body>
+
+<h1>Bus Reservation System</h1>
+
+<div class="card">
+    <h2>Check Availability (GET)</h2>
+    <div class="form-group">
+        <label>Origin & Destination (e.g., A to C)</label>
+        <input type="text" id="getOrigin" placeholder="Origin" style="width: 48%; display: inline-block;">
+        <input type="text" id="getDest" placeholder="Destination" style="width: 48%; display: inline-block;">
+    </div>
+    <div class="form-group">
+        <label>Passengers</label>
+        <input type="number" id="getQty" value="1">
+    </div>
+    <button onclick="checkAvailability()">Check Seats</button>
+</div>
+
+<div class="card">
+    <h2>Make Reservation (POST)</h2>
+    <div class="form-group">
+        <label>Origin & Destination</label>
+        <input type="text" id="postOrigin" placeholder="Origin" style="width: 48%; display: inline-block;">
+        <input type="text" id="postDest" placeholder="Destination" style="width: 48%; display: inline-block;">
+    </div>
+    <div class="form-group">
+        <label>Price & Passengers</label>
+        <input type="number" id="postPrice" placeholder="Price" style="width: 48%; display: inline-block;">
+        <input type="number" id="postQty" value="1" style="width: 48%; display: inline-block;">
+    </div>
+    <button onclick="makeReservation()" style="background: #27ae60;">Confirm Booking</button>
+</div>
+
+<div class="card">
+    <h2>Server Response</h2>
+    <div id="response">Results will appear here...</div>
+</div>
+
+<script>
+    const API_BASE = window.location.origin + "/bus-reservation-system/api/v1";
+
+    async function checkAvailability() {
+        const origin = document.getElementById('getOrigin').value;
+        const dest = document.getElementById('getDest').value;
+        const qty = document.getElementById('getQty').value;
+
+        const url = `${API_BASE}/availability?origin=${origin}&destination=${dest}&passengers=${qty}`;
+
+        try {
+            const res = await fetch(url);
+            const data = await res.text();
+            document.getElementById('response').innerText = `Status: ${res.status}\n\n${data}`;
+        } catch (err) {
+            document.getElementById('response').innerText = "Error: " + err;
+        }
+    }
+
+    async function makeReservation() {
+        const body = {
+            origin: document.getElementById('postOrigin').value,
+            destination: document.getElementById('postDest').value,
+            passengers: parseInt(document.getElementById('postQty').value),
+            price: parseFloat(document.getElementById('postPrice').value)
+        };
+
+        try {
+            const res = await fetch(`${API_BASE}/reserve`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            const data = await res.text();
+            document.getElementById('response').innerText = `Status: ${res.status}\n\n${data}`;
+        } catch (err) {
+            document.getElementById('response').innerText = "Error: " + err;
+        }
+    }
+</script>
+</body>
+</html>

@@ -2,11 +2,7 @@ package com.enactor.bus.reservation.system.api.v1;
 
 import com.enactor.bus.reservation.system.api.v1.ro.request.AvailabilityRequest;
 import com.enactor.bus.reservation.system.api.v1.ro.response.AvailabilityResponse;
-import com.enactor.bus.reservation.system.service.BookingService;
-import com.google.gson.Gson;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -14,20 +10,10 @@ import java.io.IOException;
 import java.util.List;
 
 @WebServlet("/api/v1/availability")
-public class AvailabilityServlet extends HttpServlet {
-    private BookingService bookingService;
-    private Gson gson;
+public class AvailabilityServlet extends BaseServlet {
 
     @Override
-    public void init() throws ServletException {
-        this.bookingService = (BookingService) getServletContext().getAttribute("bookingService");
-        this.gson = (Gson) getServletContext().getAttribute("gson");
-    }
-
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
         try {
             String origin = req.getParameter("origin");
@@ -36,8 +22,7 @@ public class AvailabilityServlet extends HttpServlet {
             int passengers = Integer.parseInt(passengersParam != null ? passengersParam : "1");
 
             if (origin == null || destination == null) {
-                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                resp.getWriter().write(gson.toJson(java.util.Map.of("error", "Missing origin or destination")));
+                writeError(resp, "Missing origin or destination", HttpServletResponse.SC_BAD_REQUEST);
                 return;
             }
 
@@ -52,15 +37,12 @@ public class AvailabilityServlet extends HttpServlet {
                     destination
             );
 
-            resp.setStatus(HttpServletResponse.SC_OK);
-            resp.getWriter().write(gson.toJson(availabilityResponse));
+            writeJson(resp, availabilityResponse, HttpServletResponse.SC_OK);
 
         } catch (NumberFormatException e) {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            resp.getWriter().write(gson.toJson(java.util.Map.of("error", "Invalid passenger count")));
+            writeError(resp, "Invalid passenger count format", HttpServletResponse.SC_BAD_REQUEST);
         } catch (Exception e) {
-            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            resp.getWriter().write(gson.toJson(java.util.Map.of("error", "Internal server error: " + e.getMessage())));
+            writeError(resp, "Internal server error: " + e.getMessage(), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
 }

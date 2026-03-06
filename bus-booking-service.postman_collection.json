@@ -1,0 +1,75 @@
+{
+  "info": {
+    "_postman_id": "2edaf6f0-a33d-4171-9228-6d4375409133",
+    "name": "bus-booking-service",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "1753007"
+  },
+  "item": [
+    {
+      "name": "get_availability",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "localhost:8080/bus-reservation-system/api/v1/availability?origin=A&destination=B&passengers=3",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "bus-reservation-system",
+            "api",
+            "v1",
+            "availability"
+          ],
+          "query": [
+            {
+              "key": "origin",
+              "value": "A"
+            },
+            {
+              "key": "destination",
+              "value": "B"
+            },
+            {
+              "key": "passengers",
+              "value": "3"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "make_reservation",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"origin\": \"A\",\r\n    \"destination\": \"C\",\r\n    \"passengerCount\": 2,\r\n    \"priceConfirmation\": 200\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/bus-reservation-system/api/v1/reserve",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "bus-reservation-system",
+            "api",
+            "v1",
+            "reserve"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

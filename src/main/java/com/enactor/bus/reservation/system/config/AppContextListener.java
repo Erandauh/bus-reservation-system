@@ -12,11 +12,10 @@ import jakarta.servlet.annotation.WebListener;
 public class AppContextListener implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        // This is your new "Main" logic
+
         BookingServiceImpl bookingService = new BookingServiceImpl(new Bus(), new StandardPricing());
         Gson gson = new Gson();
 
-        // Share these with the Servlets
         sce.getServletContext().setAttribute("bookingService", bookingService);
         sce.getServletContext().setAttribute("gson", gson);
     }
