@@ -1,0 +1,107 @@
+openapi: 3.0.3
+info:
+  title: Bus Reservation System API
+  description: API for managing cross-country bus bookings with segment-based availability.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Local Docker Environment
+
+paths:
+  /availability:
+    get:
+      summary: Check seat availability
+      description: Returns available seats and pricing for a specific journey.
+      parameters:
+        - name: origin
+          in: query
+          required: true
+          schema:
+            type: string
+            example: "A"
+        - name: destination
+          in: query
+          required: true
+          schema:
+            type: string
+            example: "C"
+        - name: passengers
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 1
+      responses:
+        '200':
+          description: Successful retrieval
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AvailabilityResponse'
+        '400':
+          description: Invalid parameters
+
+  /reserve:
+    post:
+      summary: Create a reservation
+      description: Reserves seats for a journey and returns a ticket ID.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReservationRequest'
+      responses:
+        '201':
+          description: Reservation created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReservationResponse'
+        '409':
+          description: Conflict - Seats no longer available
+        '400':
+          description: Bad Request - Pricing mismatch or invalid route
+
+components:
+  schemas:
+    AvailabilityResponse:
+      type: object
+      properties:
+        availableSeats:
+          type: array
+          items:
+            type: string
+          example: ["1A", "1B", "2C"]
+        price:
+          type: integer
+          example: 100
+        origin:
+          type: string
+        destination:
+          type: string
+
+    ReservationRequest:
+      type: object
+      required: [origin, destination, passengerCount, priceConfirmation]
+      properties:
+        origin:
+          type: string
+        destination:
+          type: string
+        passengerCount:
+          type: integer
+        priceConfirmation:
+          type: integer
+
+    ReservationResponse:
+      type: object
+      properties:
+        ticketId:
+          type: string
+        reservedSeats:
+          type: array
+          items:
+            type: string
+        totalPrice:
+          type: integer
