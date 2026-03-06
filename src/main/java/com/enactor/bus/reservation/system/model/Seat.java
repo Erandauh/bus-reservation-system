@@ -23,7 +23,12 @@ public class Seat {
         return true;
     }
 
-
+    public void reserve(int start, int end, boolean isReturn) {
+        boolean[] targetSegments = isReturn ? returnSegments : outboundSegments;
+        for (int i = start; i < end; i++) {
+            targetSegments[i] = true;
+        }
+    }
 
     public String getLabel() { return label; }
 }
